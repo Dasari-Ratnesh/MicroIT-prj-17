@@ -1,0 +1,75 @@
+def display_board(board):
+    print("\n")
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+    print("\n")
+
+def check_win(board, player):
+    # Check rows, columns, and diagonals
+    win_conditions = (
+        [board[0], board[1], board[2]],  # Rows
+        [[board[0][0], board[1][0], board[2][0]],  # Columns
+         [board[0][1], board[1][1], board[2][1]],
+         [board[0][2], board[1][2], board[2][2]]],
+        [[board[0][0], board[1][1], board[2][2]],  # Diagonal
+         [board[0][2], board[1][1], board[2][0]]]  # Reverse Diagonal
+    )
+    for group in win_conditions:
+        for line in group:
+            if all(cell == player for cell in line):
+                return True
+    return False
+
+def check_draw(board):
+    return all(cell in ['X', 'O'] for row in board for cell in row)
+
+def get_move(player):
+    while True:
+        try:
+            move = int(input(f"Player {player}, enter your move (1-9): "))
+            if move < 1 or move > 9:
+                print("Invalid input. Please choose a number from 1 to 9.")
+                continue
+            row = (move - 1) // 3
+            col = (move - 1) % 3
+            return row, col
+        except ValueError:
+            print("Please enter a valid number.")
+
+def play_game():
+    while True:
+        board = [['1', '2', '3'],
+                 ['4', '5', '6'],
+                 ['7', '8', '9']]
+        current_player = 'X'
+        game_over = False
+
+        while not game_over:
+            display_board(board)
+            row, col = get_move(current_player)
+
+            if board[row][col] in ['X', 'O']:
+                print("That spot is already taken. Try again.")
+                continue
+
+            board[row][col] = current_player
+
+            if check_win(board, current_player):
+                display_board(board)
+                print(f"Player {current_player} wins!")
+                game_over = True
+            elif check_draw(board):
+                display_board(board)
+                print("It's a draw!")
+                game_over = True
+            else:
+                current_player = 'O' if current_player == 'X' else 'X'
+
+        play_again = input("Play again? (y/n): ").lower()
+        if play_again != 'y':
+            print("Thanks for playing!")
+            break
+
+# Start the game
+play_game()
